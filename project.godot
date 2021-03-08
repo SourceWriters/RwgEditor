@@ -8,14 +8,20 @@
 
 config_version=4
 
-_global_script_classes=[  ]
+_global_script_classes=[ {
+"base": "Reference",
+"class": "VsObject",
+"language": "GDScript",
+"path": "res://scripts/gd/VsObject.gd"
+} ]
 _global_script_class_icons={
-
+"VsObject": ""
 }
 
 [application]
 
 config/name="Rwg Editor"
+run/main_scene="res://Spatial.tscn"
 config/icon="res://icon.png"
 
 [rendering]
