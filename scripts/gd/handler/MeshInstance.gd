@@ -1,21 +1,40 @@
 extends MeshInstance
 
+var noise : OpenSimplexNoise;
+var shape : CollisionShape;
+
 func _ready():
+	shape = get_child(0).get_child(0);
+	noise = OpenSimplexNoise.new();
+	noise.octaves = 4;
+	noise.period = 20.0;
+	noise.persistence = 0.8;
+	gen_terrain();
+	
+func gen_terrain():
+	if mesh.get_surface_count() != 0:	
+		mesh.surface_remove(0);
+	noise.seed = randi();
+	
 	var arr = [];
 	arr.resize(Mesh.ARRAY_MAX);
 
 	var verts = PoolVector3Array();
 	var normals = PoolVector3Array();
 	var indices = PoolIntArray();
+	var uvs = PoolVector2Array();
 	
 	var index = 0;
+	
+	var mult = 0.45;
+	var ymult = 32;
 	
 	var size_x = 100;
 	var size_z = 100;
 	for x in range(size_x):
 		var offset = verts.size();
 		for z in range(size_z):
-			var y : int = int(floor(sin(x * size_x + z) * 3));
+			var y : int = int(floor(noise.get_noise_2d(x * mult, z * mult) * ymult));
 			var size = verts.size()
 			# X border
 			if not z == 0:
@@ -59,6 +78,7 @@ func _ready():
 	arr[Mesh.ARRAY_NORMAL] = normals;
 			
 	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arr);
-	
-	
-	
+	shape.shape = mesh.create_trimesh_shape();
+
+func _on_Button_pressed():
+	gen_terrain();
